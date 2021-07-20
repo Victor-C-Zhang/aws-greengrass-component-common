@@ -8,8 +8,10 @@ package com.amazon.aws.iot.greengrass.component.common;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.node.JsonNodeType;
 import org.hamcrest.Matchers;
 import org.hamcrest.collection.IsMapContaining;
 import org.hamcrest.core.Is;
@@ -300,5 +302,64 @@ class ComponentRecipeDeserializationTest extends BaseRecipeTest {
         IOException ex = assertThrows(IOException.class,
                 () -> DESERIALIZER_YAML.readValue(recipePath.toFile(), ComponentRecipe.class));
         assertThat(ex.getMessage(), containsString("Manifests contains one or more null element(s)"));
+    }
+
+    @Test
+    void GIVEN_template_with_all_possible_fields_yaml_WHEN_attempt_to_deserialize_THEN_return_instantiated_model_instance()
+            throws IOException {
+        String filename = "sample-template-with-all-fields.yaml";
+        Path recipePath = getResourcePath(filename);
+
+        ComponentRecipe recipe = DESERIALIZER_YAML.readValue(new String(Files.readAllBytes(recipePath)),
+                ComponentRecipe.class);
+        verifyTemplateWithAllFields(recipe);
+    }
+
+    @Test
+    void GIVEN_template_with_all_possible_fields_json_WHEN_attempt_to_deserialize_THEN_return_instantiated_model_instance()
+            throws IOException {
+        String filename = "sample-template-with-all-fields.json";
+        Path recipePath = getResourcePath(filename);
+
+        ComponentRecipe recipe = DESERIALIZER_YAML.readValue(new String(Files.readAllBytes(recipePath)),
+                ComponentRecipe.class);
+        verifyTemplateWithAllFields(recipe);
+    }
+
+    void verifyTemplateWithAllFields(ComponentRecipe recipe) {
+        assertThat(recipe.getComponentName(), Is.is("FooTemplate"));
+        assertThat(recipe.getComponentVersion().getValue(), Is.is("1.0.0"));
+        assertThat(recipe.getComponentType(), Is.is(ComponentType.TEMPLATE));
+
+        assertThat(recipe.getComponentDependencies(), IsNull.nullValue());
+
+        assertThat(recipe.getManifests().size(), Is.is(1));
+        PlatformSpecificManifest manifest = recipe.getManifests().get(0);
+        assertEquals("all", manifest.getPlatform().get("os"));
+        assertThat(manifest.getLifecycle().size(), Is.is(0)); // deprecated
+        assertThat(manifest.getName(), equalTo("All platforms"));
+
+        assertThat(recipe.getLifecycle().size(), Is.is(0));
+
+        assertThat(recipe.getComponentConfiguration().getDefaultConfiguration(), IsNull.nullValue());
+
+        // parameter schema
+        Map<String, TemplateParameter> parameterSchemaMap = recipe.getComponentConfiguration().getParameterSchema();
+        assertEquals(parameterSchemaMap.size(), 7);
+        assertEquals(parameterSchemaMap.get("field1"), new TemplateParameter(TemplateParameterType.STRING, true));
+        assertEquals(parameterSchemaMap.get("Field2"), new TemplateParameter(TemplateParameterType.STRING, false));
+        assertEquals(parameterSchemaMap.get("field3"), new TemplateParameter(TemplateParameterType.BOOLEAN, false));
+        assertEquals(parameterSchemaMap.get("Field4"), new TemplateParameter(TemplateParameterType.BOOLEAN, true));
+        assertEquals(parameterSchemaMap.get("field5"), new TemplateParameter(TemplateParameterType.OBJECT, false));
+        assertEquals(parameterSchemaMap.get("field6"), new TemplateParameter(TemplateParameterType.ARRAY, false));
+        assertEquals(parameterSchemaMap.get("field7"), new TemplateParameter(TemplateParameterType.NUMBER, false));
+
+        // default parameters
+        JsonNode defaultParametersNode = recipe.getComponentConfiguration().getDefaultParameters();
+        assertEquals(defaultParametersNode.get("Field2").asText(), "Another string");
+        assertEquals(defaultParametersNode.get("field3").asBoolean(), true);
+        assertEquals(defaultParametersNode.get("field5").getNodeType(), JsonNodeType.OBJECT);
+        assertEquals(defaultParametersNode.get("field6").getNodeType(), JsonNodeType.ARRAY);
+        assertEquals(defaultParametersNode.get("field7").asInt(), 7);
     }
 }

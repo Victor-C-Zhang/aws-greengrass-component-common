@@ -5,34 +5,28 @@
 
 package com.amazon.aws.iot.greengrass.component.common;
 
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
 import com.fasterxml.jackson.databind.annotation.JsonPOJOBuilder;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.util.Map;
+import lombok.NonNull;
 
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-@JsonDeserialize(builder = ComponentConfiguration.ComponentConfigurationBuilder.class)
-public class ComponentConfiguration {
+@JsonDeserialize(builder = TemplateParameter.TemplateParameterBuilder.class)
+public class TemplateParameter {
+    @NonNull
+    TemplateParameterType type;
 
-    JsonNode defaultConfiguration;
-
-    JsonNode defaultParameters;
-
-    Map<String, TemplateParameter> parameterSchema;
-
-    public ComponentConfiguration(JsonNode defaultConfiguration) {
-        this.defaultConfiguration = defaultConfiguration;
-    }
+    @NonNull
+    @Builder.Default
+    Boolean required = false;
 
     @JsonPOJOBuilder(withPrefix = "")
-    public static class ComponentConfigurationBuilder {
+    public static class TemplateParameterBuilder {
     }
 }

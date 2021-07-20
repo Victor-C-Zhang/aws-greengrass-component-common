@@ -12,6 +12,8 @@ public enum ComponentType {
     GENERIC,
     @JsonProperty("aws.greengrass.lambda")
     LAMBDA,
+    @JsonProperty("aws.greengrass.template")
+    TEMPLATE,
     @JsonProperty("aws.greengrass.plugin")
     PLUGIN,
     @JsonProperty("aws.greengrass.nucleus")
