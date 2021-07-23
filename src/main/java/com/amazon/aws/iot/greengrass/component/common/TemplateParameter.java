@@ -26,6 +26,8 @@ public class TemplateParameter {
     @Builder.Default
     Boolean required = false;
 
+    Object defaultValue;
+
     @JsonPOJOBuilder(withPrefix = "")
     public static class TemplateParameterBuilder {
     }

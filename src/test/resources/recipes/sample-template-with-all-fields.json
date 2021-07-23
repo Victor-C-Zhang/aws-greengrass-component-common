@@ -6,24 +6,6 @@
   "ComponentVersion": "1.0.0",
   "ComponentType": "aws.greengrass.template",
   "ComponentConfiguration": {
-    "DefaultParameters": {
-      "Field2": "Another string",
-      "field3": true,
-      "field5": {
-        "key1": "val1",
-        "key2": {
-          "subkey1": 1,
-          "subkey2": "two"
-        }
-      },
-      "field6": [
-        1,
-        2,
-        "red",
-        "blue"
-      ],
-      "field7": 7
-    },
     "ParameterSchema": {
       "field1": {
         "type": "string",
@@ -31,11 +13,13 @@
       },
       "Field2": {
         "type": "string",
-        "required": false
+        "required": false,
+        "defaultValue": "Another string"
       },
       "field3": {
         "type": "boolean",
-        "required": false
+        "required": false,
+        "defaultValue": true
       },
       "Field4": {
         "type": "boolean",
@@ -43,15 +27,29 @@
       },
       "field5": {
         "type": "object",
-        "required": false
+        "required": false,
+        "defaultValue": {
+          "key1": "val1",
+          "key2": {
+            "subkey1": 1,
+            "subkey2": "two"
+          }
+        }
       },
       "field6": {
         "type": "array",
-        "required": false
+        "required": false,
+        "defaultValue": [
+          1,
+          2,
+          "red",
+          "blue"
+        ]
       },
       "field7": {
         "type": "number",
-        "required": false
+        "required": false,
+        "defaultValue": 7
       }
     }
   },

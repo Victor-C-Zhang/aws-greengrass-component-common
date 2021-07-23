@@ -326,7 +326,7 @@ class ComponentRecipeDeserializationTest extends BaseRecipeTest {
         verifyTemplateWithAllFields(recipe);
     }
 
-    void verifyTemplateWithAllFields(ComponentRecipe recipe) {
+    void verifyTemplateWithAllFields(ComponentRecipe recipe) throws JsonProcessingException {
         assertThat(recipe.getComponentName(), Is.is("FooTemplate"));
         assertThat(recipe.getComponentVersion().getValue(), Is.is("1.0.0"));
         assertThat(recipe.getComponentType(), Is.is(ComponentType.TEMPLATE));
@@ -346,20 +346,22 @@ class ComponentRecipeDeserializationTest extends BaseRecipeTest {
         // parameter schema
         Map<String, TemplateParameter> parameterSchemaMap = recipe.getComponentConfiguration().getParameterSchema();
         assertEquals(parameterSchemaMap.size(), 7);
-        assertEquals(parameterSchemaMap.get("field1"), new TemplateParameter(TemplateParameterType.STRING, true));
-        assertEquals(parameterSchemaMap.get("Field2"), new TemplateParameter(TemplateParameterType.STRING, false));
-        assertEquals(parameterSchemaMap.get("field3"), new TemplateParameter(TemplateParameterType.BOOLEAN, false));
-        assertEquals(parameterSchemaMap.get("Field4"), new TemplateParameter(TemplateParameterType.BOOLEAN, true));
-        assertEquals(parameterSchemaMap.get("field5"), new TemplateParameter(TemplateParameterType.OBJECT, false));
-        assertEquals(parameterSchemaMap.get("field6"), new TemplateParameter(TemplateParameterType.ARRAY, false));
-        assertEquals(parameterSchemaMap.get("field7"), new TemplateParameter(TemplateParameterType.NUMBER, false));
-
-        // default parameters
-        JsonNode defaultParametersNode = recipe.getComponentConfiguration().getDefaultParameters();
-        assertEquals(defaultParametersNode.get("Field2").asText(), "Another string");
-        assertEquals(defaultParametersNode.get("field3").asBoolean(), true);
-        assertEquals(defaultParametersNode.get("field5").getNodeType(), JsonNodeType.OBJECT);
-        assertEquals(defaultParametersNode.get("field6").getNodeType(), JsonNodeType.ARRAY);
-        assertEquals(defaultParametersNode.get("field7").asInt(), 7);
+        assertEquals(parameterSchemaMap.get("field1"),
+                TemplateParameter.builder().type(TemplateParameterType.STRING).required(true).defaultValue(null).build());
+        assertEquals(parameterSchemaMap.get("Field2"),
+                TemplateParameter.builder().type(TemplateParameterType.STRING).required(false).defaultValue("Another string").build());
+        assertEquals(parameterSchemaMap.get("field3"),
+                TemplateParameter.builder().type(TemplateParameterType.BOOLEAN).required(false).defaultValue(true).build());
+        assertEquals(parameterSchemaMap.get("Field4"),
+                TemplateParameter.builder().type(TemplateParameterType.BOOLEAN).required(true).defaultValue(null).build());
+        Object field5 = DESERIALIZER_YAML.readValue("key1: val1\n" + "key2:\n" + "  subkey1: 1\n" + "  subkey2: two",
+                Object.class);
+        assertEquals(parameterSchemaMap.get("field5"),
+                TemplateParameter.builder().type(TemplateParameterType.OBJECT).required(false).defaultValue(field5).build());
+        Object field6 = DESERIALIZER_YAML.readValue("- 1\n" + "- 2\n" + "- red\n" + "- blue", Object.class);
+        assertEquals(parameterSchemaMap.get("field6"),
+                TemplateParameter.builder().type(TemplateParameterType.ARRAY).required(false).defaultValue(field6).build());
+        assertEquals(parameterSchemaMap.get("field7"),
+                TemplateParameter.builder().type(TemplateParameterType.NUMBER).required(false).defaultValue(7).build());
     }
 }

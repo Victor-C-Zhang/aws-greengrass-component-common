@@ -24,13 +24,7 @@ public class ComponentConfiguration {
 
     JsonNode defaultConfiguration;
 
-    JsonNode defaultParameters;
-
     Map<String, TemplateParameter> parameterSchema;
-
-    public ComponentConfiguration(JsonNode defaultConfiguration) {
-        this.defaultConfiguration = defaultConfiguration;
-    }
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class ComponentConfigurationBuilder {

@@ -12,6 +12,7 @@ ComponentConfiguration:
     badParameter:
       type: not-a-real-type
       required: false
+      defaultValue: ooga booga
 # No ComponentDependencies
 Manifests:
   - Platform:
