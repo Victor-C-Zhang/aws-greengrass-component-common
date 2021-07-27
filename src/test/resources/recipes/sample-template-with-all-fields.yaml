@@ -6,7 +6,7 @@ ComponentPublisher: Me
 ComponentVersion: '1.0.0'
 ComponentType: aws.greengrass.template
 # no configuration
-ParameterSchema:
+TemplateParameterSchema:
   field1:
     type: string
     required: true

@@ -8,10 +8,8 @@ package com.amazon.aws.iot.greengrass.component.common;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.MapperFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.JsonNodeType;
 import org.hamcrest.Matchers;
 import org.hamcrest.collection.IsMapContaining;
 import org.hamcrest.core.Is;
@@ -346,7 +344,7 @@ class ComponentRecipeDeserializationTest extends BaseRecipeTest {
         assertThat(recipe.getComponentConfiguration(), IsNull.nullValue());
 
         // parameter schema
-        Map<String, TemplateParameter> parameterSchemaMap = recipe.getParameterSchema();
+        Map<String, TemplateParameter> parameterSchemaMap = recipe.getTemplateParameterSchema();
         assertEquals(parameterSchemaMap.size(), 7);
         assertEquals(parameterSchemaMap.get("field1"),
                 TemplateParameter.builder().type(TemplateParameterType.STRING).required(true).defaultValue(null).build());
@@ -397,11 +395,11 @@ class ComponentRecipeDeserializationTest extends BaseRecipeTest {
         assertNull(recipe.getComponentDependencies());
         assertEquals(0, recipe.getLifecycle().size());
         assertEquals(0, recipe.getManifests().size());
-        assertNull(recipe.getParameterSchema());
+        assertNull(recipe.getTemplateParameterSchema());
 
         // parameters
-        assertEquals(2, recipe.getParameters().size());
-        Map<String, Object> parameters = recipe.getParameters();
+        assertEquals(2, recipe.getTemplateParameters().size());
+        Map<String, Object> parameters = recipe.getTemplateParameters();
         assertEquals(2, parameters.get("one"));
         assertEquals("blue", parameters.get("red"));
     }

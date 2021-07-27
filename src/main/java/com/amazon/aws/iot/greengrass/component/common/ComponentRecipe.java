@@ -50,9 +50,9 @@ public class ComponentRecipe {
 
     ComponentConfiguration componentConfiguration;
 
-    Map<String, TemplateParameter> parameterSchema;
+    Map<String, TemplateParameter> templateParameterSchema;
 
-    Map<String, Object> parameters;
+    Map<String, Object> templateParameters;
 
     Map<String, DependencyProperties> componentDependencies;
 

@@ -5,7 +5,7 @@
   "ComponentPublisher": "Me",
   "ComponentVersion": "1.0.0",
   "ComponentType": "aws.greengrass.generic",
-  "Parameters": {
+  "TemplateParameters": {
     "one": 2,
     "red": "blue"
   }
