@@ -13,8 +13,6 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.util.Map;
-
 @Data
 @Builder
 @NoArgsConstructor
@@ -23,8 +21,6 @@ import java.util.Map;
 public class ComponentConfiguration {
 
     JsonNode defaultConfiguration;
-
-    Map<String, TemplateParameter> parameterSchema;
 
     @JsonPOJOBuilder(withPrefix = "")
     public static class ComponentConfigurationBuilder {

@@ -50,6 +50,10 @@ public class ComponentRecipe {
 
     ComponentConfiguration componentConfiguration;
 
+    Map<String, TemplateParameter> parameterSchema;
+
+    Map<String, Object> parameters;
+
     Map<String, DependencyProperties> componentDependencies;
 
     List<PlatformSpecificManifest> manifests;

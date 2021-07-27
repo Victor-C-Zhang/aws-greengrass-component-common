@@ -4,15 +4,14 @@ ComponentName: FooTemplate
 ComponentDescription: Test recipe for Greengrass packages
 ComponentVersion: '1.0.0'
 ComponentType: aws.greengrass.template
-ComponentConfiguration:
-  ParameterSchema:
-    goodParameter:
-      type: string
-      required: true
-    badParameter:
-      type: not-a-real-type
-      required: false
-      defaultValue: ooga booga
+ParameterSchema:
+  goodParameter:
+    type: string
+    required: true
+  badParameter:
+    type: not-a-real-type
+    required: false
+    defaultValue: ooga booga
 # No ComponentDependencies
 Manifests:
   - Platform:
