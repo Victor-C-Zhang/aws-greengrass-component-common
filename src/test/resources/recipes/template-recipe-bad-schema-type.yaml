@@ -1,0 +1,19 @@
+---
+RecipeFormatVersion: 2020-01-25
+ComponentName: FooTemplate
+ComponentDescription: Test recipe for Greengrass packages
+ComponentVersion: '1.0.0'
+ComponentType: aws.greengrass.template
+TemplateParameterSchema:
+  goodParameter:
+    type: string
+    required: true
+  badParameter:
+    type: not-a-real-type
+    required: false
+    defaultValue: ooga booga
+# No ComponentDependencies
+Manifests:
+  - Platform:
+      os: '*'
+    Lifecycle:

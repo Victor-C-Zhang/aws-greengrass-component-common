@@ -25,6 +25,7 @@ import java.util.Map;
 
 import lombok.Data;
 
+import static com.amazon.aws.iot.greengrass.component.common.ComponentType.GENERIC;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.aMapWithSize;
 import static org.hamcrest.Matchers.allOf;
@@ -34,6 +35,7 @@ import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasKey;
 import static org.hamcrest.Matchers.instanceOf;
 import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
 class ComponentRecipeDeserializationTest extends BaseRecipeTest {
@@ -300,5 +302,105 @@ class ComponentRecipeDeserializationTest extends BaseRecipeTest {
         IOException ex = assertThrows(IOException.class,
                 () -> DESERIALIZER_YAML.readValue(recipePath.toFile(), ComponentRecipe.class));
         assertThat(ex.getMessage(), containsString("Manifests contains one or more null element(s)"));
+    }
+
+    @Test
+    void GIVEN_template_with_all_possible_fields_yaml_WHEN_attempt_to_deserialize_THEN_return_instantiated_model_instance()
+            throws IOException {
+        String filename = "sample-template-with-all-fields.yaml";
+        Path recipePath = getResourcePath(filename);
+
+        ComponentRecipe recipe = DESERIALIZER_YAML.readValue(new String(Files.readAllBytes(recipePath)),
+                ComponentRecipe.class);
+        verifyTemplateWithAllFields(recipe);
+    }
+
+    @Test
+    void GIVEN_template_with_all_possible_fields_json_WHEN_attempt_to_deserialize_THEN_return_instantiated_model_instance()
+            throws IOException {
+        String filename = "sample-template-with-all-fields.json";
+        Path recipePath = getResourcePath(filename);
+
+        ComponentRecipe recipe = DESERIALIZER_YAML.readValue(new String(Files.readAllBytes(recipePath)),
+                ComponentRecipe.class);
+        verifyTemplateWithAllFields(recipe);
+    }
+
+    void verifyTemplateWithAllFields(ComponentRecipe recipe) throws JsonProcessingException {
+        assertThat(recipe.getComponentName(), Is.is("FooTemplate"));
+        assertThat(recipe.getComponentVersion().getValue(), Is.is("1.0.0"));
+        assertThat(recipe.getComponentType(), Is.is(ComponentType.TEMPLATE));
+
+        assertThat(recipe.getComponentDependencies(), IsNull.nullValue());
+
+        assertThat(recipe.getManifests().size(), Is.is(1));
+        PlatformSpecificManifest manifest = recipe.getManifests().get(0);
+        assertEquals("all", manifest.getPlatform().get("os"));
+        assertThat(manifest.getLifecycle().size(), Is.is(0)); // deprecated
+        assertThat(manifest.getName(), equalTo("All platforms"));
+
+        assertThat(recipe.getLifecycle().size(), Is.is(0));
+
+        assertThat(recipe.getComponentConfiguration(), IsNull.nullValue());
+
+        // parameter schema
+        Map<String, TemplateParameter> parameterSchemaMap = recipe.getTemplateParameterSchema();
+        assertEquals(parameterSchemaMap.size(), 7);
+        assertEquals(parameterSchemaMap.get("field1"),
+                TemplateParameter.builder().type(TemplateParameterType.STRING).required(true).defaultValue(null).build());
+        assertEquals(parameterSchemaMap.get("Field2"),
+                TemplateParameter.builder().type(TemplateParameterType.STRING).required(false).defaultValue("Another string").build());
+        assertEquals(parameterSchemaMap.get("field3"),
+                TemplateParameter.builder().type(TemplateParameterType.BOOLEAN).required(false).defaultValue(true).build());
+        assertEquals(parameterSchemaMap.get("Field4"),
+                TemplateParameter.builder().type(TemplateParameterType.BOOLEAN).required(true).defaultValue(null).build());
+        Object field5 = DESERIALIZER_YAML.readValue("key1: val1\n" + "key2:\n" + "  subkey1: 1\n" + "  subkey2: two",
+                Object.class);
+        assertEquals(parameterSchemaMap.get("field5"),
+                TemplateParameter.builder().type(TemplateParameterType.OBJECT).required(false).defaultValue(field5).build());
+        Object field6 = DESERIALIZER_YAML.readValue("- 1\n" + "- 2\n" + "- red\n" + "- blue", Object.class);
+        assertEquals(parameterSchemaMap.get("field6"),
+                TemplateParameter.builder().type(TemplateParameterType.ARRAY).required(false).defaultValue(field6).build());
+        assertEquals(parameterSchemaMap.get("field7"),
+                TemplateParameter.builder().type(TemplateParameterType.NUMBER).required(false).defaultValue(7).build());
+    }
+
+    @Test
+    void GIVEN_parameter_file_with_all_possible_fields_json_WHEN_attempt_to_deserialize_THEN_return_instantiated_model_instance()
+            throws IOException {
+        String filename = "sample-parameter-file-with-all-fields.json";
+        Path recipePath = getResourcePath(filename);
+
+        ComponentRecipe recipe = DESERIALIZER_YAML.readValue(new String(Files.readAllBytes(recipePath)),
+                ComponentRecipe.class);
+        verifyParameterFileWithAllFields(recipe);
+    }
+
+    @Test
+    void GIVEN_parameter_file_with_all_possible_fields_yaml_WHEN_attempt_to_deserialize_THEN_return_instantiated_model_instance()
+            throws IOException {
+        String filename = "sample-parameter-file-with-all-fields.yaml";
+        Path recipePath = getResourcePath(filename);
+
+        ComponentRecipe recipe = DESERIALIZER_YAML.readValue(new String(Files.readAllBytes(recipePath)),
+                ComponentRecipe.class);
+        verifyParameterFileWithAllFields(recipe);
+    }
+
+    void verifyParameterFileWithAllFields(ComponentRecipe recipe) {
+        assertEquals("Foo", recipe.getComponentName());
+        assertEquals("1.0.0", recipe.getComponentVersion().getValue());
+        assertEquals(GENERIC, recipe.getComponentType());
+        assertNull(recipe.getComponentConfiguration());
+        assertNull(recipe.getComponentDependencies());
+        assertEquals(0, recipe.getLifecycle().size());
+        assertEquals(0, recipe.getManifests().size());
+        assertNull(recipe.getTemplateParameterSchema());
+
+        // parameters
+        assertEquals(2, recipe.getTemplateParameters().size());
+        Map<String, Object> parameters = recipe.getTemplateParameters();
+        assertEquals(2, parameters.get("one"));
+        assertEquals("blue", parameters.get("red"));
     }
 }

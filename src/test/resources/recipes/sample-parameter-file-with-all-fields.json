@@ -1,0 +1,12 @@
+{
+  "RecipeFormatVersion": "2020-01-25",
+  "ComponentName": "Foo",
+  "ComponentDescription": "Test parameter file for Greengrass packages",
+  "ComponentPublisher": "Me",
+  "ComponentVersion": "1.0.0",
+  "ComponentType": "aws.greengrass.generic",
+  "TemplateParameters": {
+    "one": 2,
+    "red": "blue"
+  }
+}
