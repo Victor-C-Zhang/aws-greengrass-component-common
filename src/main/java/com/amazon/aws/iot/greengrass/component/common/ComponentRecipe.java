@@ -50,7 +50,7 @@ public class ComponentRecipe {
 
     ComponentConfiguration componentConfiguration;
 
-    Map<String, TemplateParameter> templateParameterSchema;
+    TemplateParameterSchema templateParameterSchema;
 
     Map<String, Object> templateParameters;
 

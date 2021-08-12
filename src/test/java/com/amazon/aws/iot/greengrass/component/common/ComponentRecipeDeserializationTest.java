@@ -344,7 +344,7 @@ class ComponentRecipeDeserializationTest extends BaseRecipeTest {
         assertThat(recipe.getComponentConfiguration(), IsNull.nullValue());
 
         // parameter schema
-        Map<String, TemplateParameter> parameterSchemaMap = recipe.getTemplateParameterSchema();
+        TemplateParameterSchema parameterSchemaMap = recipe.getTemplateParameterSchema();
         assertEquals(parameterSchemaMap.size(), 7);
         assertEquals(parameterSchemaMap.get("field1"),
                 TemplateParameter.builder().type(TemplateParameterType.STRING).required(true).defaultValue(null).build());
